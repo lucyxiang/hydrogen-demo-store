@@ -23,6 +23,7 @@ import {
   CREATE_ADDRESS_MUTATION,
 } from '~/graphql/customer-account/CustomerAddressMutations';
 import {getAuthenticatedCustomerClient} from '~/lib/customer-account.server';
+import {getLocalePrefix} from '~/lib/redirect';
 
 interface ActionData {
   formError?: string;
@@ -57,9 +58,7 @@ export async function action({request, context, params}: Route.ActionArgs) {
         mutationData?.customerAddressDelete?.userErrors?.[0]?.message,
       );
 
-      return redirect(
-        params?.locale ? `/${params?.locale}/account` : '/account',
-      );
+      return redirect(`${getLocalePrefix(params.locale)}/account`);
     } catch (error: any) {
       return data(
         {formError: error.message},
@@ -115,9 +114,7 @@ export async function action({request, context, params}: Route.ActionArgs) {
         'Expected customer address to be created',
       );
 
-      return redirect(
-        params?.locale ? `/${params?.locale}/account` : '/account',
-      );
+      return redirect(`${getLocalePrefix(params.locale)}/account`);
     } catch (error: any) {
       return data(
         {formError: error.message},
@@ -147,9 +144,7 @@ export async function action({request, context, params}: Route.ActionArgs) {
         mutationData?.customerAddressUpdate?.userErrors?.[0]?.message,
       );
 
-      return redirect(
-        params?.locale ? `/${params?.locale}/account` : '/account',
-      );
+      return redirect(`${getLocalePrefix(params.locale)}/account`);
     } catch (error: any) {
       return data(
         {formError: error.message},

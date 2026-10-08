@@ -19,6 +19,7 @@ import {Text} from '~/components/Text';
 import {getInputStyleClasses} from '~/lib/utils';
 import {CUSTOMER_UPDATE_MUTATION} from '~/graphql/customer-account/CustomerUpdateMutation';
 import {getAuthenticatedCustomerClient} from '~/lib/customer-account.server';
+import {getLocalePrefix} from '~/lib/redirect';
 
 export interface AccountOutletContext {
   customer: Customer;
@@ -82,7 +83,7 @@ export async function action({request, context, params}: Route.ActionArgs) {
       mutationData?.customerUpdate?.userErrors?.[0]?.message,
     );
 
-    return redirect(params?.locale ? `/${params.locale}/account` : '/account');
+    return redirect(`${getLocalePrefix(params.locale)}/account`);
   } catch (error: any) {
     return data(
       {formError: error?.message},

@@ -13,6 +13,7 @@ import {Money} from '~/components/Money';
 import {Heading, PageHeader, Text} from '~/components/Text';
 import {CUSTOMER_ORDER_QUERY} from '~/graphql/customer-account/CustomerOrderQuery';
 import {getAuthenticatedCustomerClient} from '~/lib/customer-account.server';
+import {getLocalePrefix} from '~/lib/redirect';
 
 export const meta = ({data}: Route.MetaArgs) => {
   return [{title: `Order ${data?.order?.name}`}];
@@ -20,7 +21,7 @@ export const meta = ({data}: Route.MetaArgs) => {
 
 export async function loader({request, context, params}: Route.LoaderArgs) {
   if (!params.id) {
-    return redirect(params?.locale ? `/${params.locale}/account` : '/account');
+    return redirect(`${getLocalePrefix(params.locale)}/account`);
   }
 
   const queryParams = new URL(request.url).searchParams;

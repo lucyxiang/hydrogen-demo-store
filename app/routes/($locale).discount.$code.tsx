@@ -3,6 +3,7 @@ import {cartQueries, createCartCookie, getCartId} from '@shopify/hydrogen';
 
 import type {Route} from './+types/($locale).discount.$code';
 
+import {getSafeRedirectPath} from '~/lib/redirect';
 import {storefrontClientContext} from '~/lib/storefront';
 
 /**
@@ -23,18 +24,21 @@ export async function loader({request, context, params}: Route.LoaderArgs) {
 
   const url = new URL(request.url);
   const searchParams = new URLSearchParams(url.search);
-  let redirectParam =
-    searchParams.get('redirect') || searchParams.get('return_to') || '/';
-
-  if (redirectParam.includes('//')) {
-    // Avoid redirecting to external URLs to prevent phishing attacks
-    redirectParam = '/';
-  }
+  // Only same-origin paths are allowed, to prevent phishing via external redirects
+  const redirectPath = getSafeRedirectPath(
+    searchParams.get('redirect') || searchParams.get('return_to'),
+    request.url,
+  );
 
   searchParams.delete('redirect');
   searchParams.delete('return_to');
 
-  const redirectUrl = `${redirectParam}?${searchParams}`;
+  // Carry the remaining query params over to the redirect target
+  const target = new URL(redirectPath, url.origin);
+  for (const [key, value] of searchParams) {
+    target.searchParams.append(key, value);
+  }
+  const redirectUrl = `${target.pathname}${target.search}${target.hash}`;
 
   if (!code) {
     return redirect(redirectUrl);

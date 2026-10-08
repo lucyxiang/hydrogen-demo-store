@@ -4,6 +4,7 @@ import type {CountryCode} from '@shopify/hydrogen/storefront-api-types';
 
 import type {Route} from './+types/($locale).locale';
 
+import {getSafeRedirectPath} from '~/lib/redirect';
 import {storefrontClientContext} from '~/lib/storefront';
 
 export async function action({request, context}: Route.ActionArgs) {
@@ -11,10 +12,7 @@ export async function action({request, context}: Route.ActionArgs) {
   const countryCode = formData.get('country');
   const redirectTo = formData.get('redirectTo');
 
-  const path =
-    typeof redirectTo === 'string' && redirectTo.startsWith('/')
-      ? redirectTo
-      : '/';
+  const path = getSafeRedirectPath(redirectTo, request.url);
 
   const cartId = getCartId(request);
 
